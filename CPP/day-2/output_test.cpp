@@ -3,7 +3,6 @@
 #include <cstdio>
 using namespace std;
 using namespace std::chrono;
-#define _GNU_SOURCE 
 
 void print_with_simple_cout(int n){
     for (int i = 0; i < n; i++)
