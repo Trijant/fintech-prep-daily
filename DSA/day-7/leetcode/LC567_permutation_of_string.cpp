@@ -6,45 +6,47 @@ using namespace std;
 // Time-complexity: O(n+m) ; where n=size of s, m=size of p
 // Space-complexity: O(1)
 
-vector<int> findAnagrams(string s, string p)
+bool checkInclusion(string s1, string s2)
 {
-    if (s.size() < p.size())
+    int s1Size = s1.size(), s2Size = s2.size();
+    // if s1 is smaller no permutation possible
+    if (s1Size > s2Size)
     {
-        return {};
-    }
-    int pfreq[26] = {0};
-    int sfreq[26] = {0};
-
-    int sSize = s.size(), pSize = p.size(), left = 0;
-
-    // vector to store all the anagram starting index
-    vector<int> anagrams;
-    anagrams.reserve(sSize);
-
-    // making record of all the frequencies in p
-    for (int i = 0; i < pSize; i++)
-    {
-        pfreq[p[i] - 'a']++;
+        return false;
     }
 
-    for (int right = 0; right < sSize; right++)
-    {
-        int curCharIndex = s[right] - 'a';
-        sfreq[curCharIndex]++;
+    // frequency array for both strings
+    int s1freq[26] = {0};
+    int s2freq[26] = {0};
 
-        // edjusting window to match freq
-        while (sfreq[curCharIndex] > pfreq[curCharIndex])
+    // storing frequency of s1
+    for (int i = 0; i < s1Size; i++)
+    {
+        s1freq[s1[i] - 'a']++;
+    }
+
+    // sliding window approach
+    int left = 0;
+    for (int right = 0; right < s2Size; right++)
+    {
+        // inserting from right pointer
+        int idx = s2[right] - 'a';
+        s2freq[idx]++;
+
+        // shrinking with help of left pointer to match condition
+        while (s2freq[idx] > s1freq[idx])
         {
-            sfreq[s[left] - 'a']--;
+            s2freq[s2[left] - 'a']--;
             left++;
         }
-        // we already checked freq so just need to check window size if match it's anagram
-        if (right - left + 1 == pSize)
+
+        // checking the valid condition
+        if (right - left + 1 == s1Size)
         {
-            anagrams.push_back(left);
+            return true;
         }
     }
-    return anagrams;
+    return false;
 }
 
 int main()
@@ -54,10 +56,5 @@ int main()
     getline(cin, s1);
     cout << "Enter string p:";
     getline(cin, s2);
-    vector<int> anagrams = findAnagrams(s1, s2);
-    cout << "Starting index of anagrams: " << endl;
-    for (int i = 0; i < anagrams.size(); i++)
-    {
-        cout << anagrams[i] << " ";
-    }
+    cout << "Does s2 contain permutation of s1: " <<checkInclusion(s1,s2)<< endl;
 }
