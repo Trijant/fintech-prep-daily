@@ -108,7 +108,7 @@ private:
                        leftToRightDiagonalMask, rightToLeftDiagonalMask);
         }
 
-        // choice -2
+        // Choice -2
         helper(ans, path, row, col + 1, n, rowMask, colMask,
                leftToRightDiagonalMask, rightToLeftDiagonalMask);
     }
