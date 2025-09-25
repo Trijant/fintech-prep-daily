@@ -1,5 +1,5 @@
 #include <iostream>
-#include <stack>
+#include <queue>
 using namespace std;
 
 // topic: AVL tree(self balancing tree)
@@ -143,6 +143,59 @@ private:
         emptyTree(root->right);
         delete root;
     }
+    string centerValue(string s, int width)
+    {
+        int total = width - s.size();
+        int left = total / 2;
+        int right = total - left;
+        return string(left, ' ') + s + string(right, ' ');
+    }
+
+    void displayHelper(TreeNode *root)
+    {
+        if (!root)
+            return;
+
+        queue<TreeNode *> q;
+        q.push(root);
+
+        int height = root->height;
+        TreeNode *tmp = root;
+
+        int width = 11 << (height-1);
+
+        while (!q.empty())
+        {
+            height--;
+            int sz = q.size();
+            
+            for (int i = 0; i < sz; ++i)
+            {
+                TreeNode *node = q.front();
+                q.pop();
+                
+                if (node)
+                cout << centerValue(to_string(node->val), width);
+                else
+                cout << centerValue("null",width);
+                
+                if (node)
+                {
+                    q.push(node->left);
+                    q.push(node->right);
+                }
+                else
+                {
+                    q.push(nullptr);
+                    q.push(nullptr);
+                }
+            }
+            cout << "\n\n";
+            if(!height)
+            break;
+            width =width>>1;
+        }
+    }
 
 public:
     AVLTree()
@@ -167,4 +220,49 @@ public:
         root = deleteHelper(root, curVal);
         root = insertHelper(root, newVal);
     }
+    void display(){
+        displayHelper(root);
+    }
 };
+
+int main(){
+    cout << "Instructions:" << endl;
+    cout << "insert <val>" << endl;
+    cout << "delete <val>" << endl;
+    cout << "update <curval> <newval>" << endl;
+    cout << "display" << endl;
+    cout << "exit" << endl;
+
+    AVLTree *avl = new AVLTree();
+
+    while (true)
+    {
+        string i;
+        cin >> i;
+        if(i=="exit"){
+            break;
+        }
+        else if(i=="insert"){
+            int val;
+            cin >> val;
+            avl->insertNode(val);
+        }
+        else if(i=="delete"){
+            int val;
+            cin >> val;
+            avl->deleteNode(val);
+        }
+        else if(i=="update"){
+            int curVal, newVal;
+            cin >> curVal>>newVal;
+            avl->updateNode(curVal,newVal);
+        }
+        else if(i=="display"){
+            avl->display();
+        }
+        else{
+            cout << "Invalid instruction!" << endl;
+        }
+    }
+    
+}
