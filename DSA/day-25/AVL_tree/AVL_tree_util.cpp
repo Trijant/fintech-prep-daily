@@ -8,6 +8,7 @@ struct TreeNode
 {
     int val;
     int height;
+    int count;
     TreeNode *left;
     TreeNode *right;
     TreeNode(int val)
@@ -15,6 +16,7 @@ struct TreeNode
         this->val = val;
         height = 1;
         left = right = nullptr;
+        count = 1;
     }
 };
 
@@ -93,8 +95,10 @@ private:
             return new TreeNode(val);
         if (root->val > val)
             root->left = insertHelper(root->left, val);
-        else
+        else if (root->val < val)
             root->right = insertHelper(root->right, val);
+        else
+            root->count++;
         root = balanceTree(root);
         return root;
     }
@@ -108,6 +112,8 @@ private:
             root->left = deleteHelper(root->left, val);
         else if (root->val < val)
             root->right = deleteHelper(root->right, val);
+        else if(root->count>1)
+            root->count--;
         else
         {
             if (!root->left)
@@ -162,23 +168,23 @@ private:
         int height = root->height;
         TreeNode *tmp = root;
 
-        int width = 11 << (height-1);
+        int width = 11 << (height - 1);
 
         while (!q.empty())
         {
             height--;
             int sz = q.size();
-            
+
             for (int i = 0; i < sz; ++i)
             {
                 TreeNode *node = q.front();
                 q.pop();
-                
+
                 if (node)
-                cout << centerValue(to_string(node->val), width);
+                    cout << centerValue(to_string(node->val), width);
                 else
-                cout << centerValue("null",width);
-                
+                    cout << centerValue("null", width);
+
                 if (node)
                 {
                     q.push(node->left);
@@ -191,10 +197,20 @@ private:
                 }
             }
             cout << "\n\n";
-            if(!height)
-            break;
-            width =width>>1;
+            if (!height)
+                break;
+            width = width >> 1;
         }
+    }
+    TreeNode* findNode(TreeNode* root,int val){
+        if(!root)
+            return nullptr;
+        if(root->val==val)
+            return root;
+        else if(root->val>val)
+            return findNode(root->left, val);
+        else
+            return findNode(root->right, val);
     }
 
 public:
@@ -220,17 +236,24 @@ public:
         root = deleteHelper(root, curVal);
         root = insertHelper(root, newVal);
     }
-    void display(){
+    void display()
+    {
         displayHelper(root);
+    }
+    int count(int val){
+        TreeNode* cur=findNode(root, val);
+        return (cur ? cur->count : -1);
     }
 };
 
-int main(){
+int main()
+{
     cout << "Instructions:" << endl;
     cout << "insert <val>" << endl;
     cout << "delete <val>" << endl;
     cout << "update <curval> <newval>" << endl;
     cout << "display" << endl;
+    cout << "count <val>" << endl;
     cout << "exit" << endl;
 
     AVLTree *avl = new AVLTree();
@@ -239,30 +262,40 @@ int main(){
     {
         string i;
         cin >> i;
-        if(i=="exit"){
+        if (i == "exit")
+        {
             break;
         }
-        else if(i=="insert"){
+        else if (i == "insert")
+        {
             int val;
             cin >> val;
             avl->insertNode(val);
         }
-        else if(i=="delete"){
+        else if (i == "delete")
+        {
             int val;
             cin >> val;
             avl->deleteNode(val);
         }
-        else if(i=="update"){
+        else if (i == "update")
+        {
             int curVal, newVal;
-            cin >> curVal>>newVal;
-            avl->updateNode(curVal,newVal);
+            cin >> curVal >> newVal;
+            avl->updateNode(curVal, newVal);
         }
-        else if(i=="display"){
+        else if (i == "display")
+        {
             avl->display();
         }
-        else{
+        else if(i=="count"){
+            int val;
+            cin >> val;
+            cout << "count: " << avl->count(val)<<endl;
+        }
+        else
+        {
             cout << "Invalid instruction!" << endl;
         }
     }
-    
 }
