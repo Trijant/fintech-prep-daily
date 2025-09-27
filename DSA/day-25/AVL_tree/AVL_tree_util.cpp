@@ -24,6 +24,7 @@ class AVLTree
 {
 private:
     TreeNode *root;
+    int size;
 
     TreeNode *rightRotation(TreeNode *root)
     {
@@ -141,14 +142,6 @@ private:
         return root;
     }
 
-    void emptyTree(TreeNode *root)
-    {
-        if (!root)
-            return;
-        emptyTree(root->left);
-        emptyTree(root->right);
-        delete root;
-    }
     string centerValue(string s, int width)
     {
         int total = width - s.size();
@@ -179,11 +172,11 @@ private:
             {
                 TreeNode *node = q.front();
                 q.pop();
-
+                
                 if (node)
                     cout << centerValue(to_string(node->val), width);
                 else
-                    cout << centerValue("null", width);
+                cout << centerValue("null", width);
 
                 if (node)
                 {
@@ -213,28 +206,41 @@ private:
             return findNode(root->right, val);
     }
 
-public:
+    void emptyTreeHelper(TreeNode *root)
+    {
+        if (!root)
+            return;
+        emptyTreeHelper(root->left);
+        emptyTreeHelper(root->right);
+        delete root;
+    }
+
+    public:
     AVLTree()
     {
         root = nullptr;
+        size = 0;
     }
     ~AVLTree()
     {
-        emptyTree(root);
+        emptyTreeHelper(root);
         root = nullptr;
+        size = 0;
     }
     void insertNode(int val)
     {
         root = insertHelper(root, val);
+        size++;
     }
     void deleteNode(int val)
     {
         root = deleteHelper(root, val);
+        size--;
     }
     void updateNode(int curVal, int newVal)
     {
-        root = deleteHelper(root, curVal);
-        root = insertHelper(root, newVal);
+        deleteNode(curVal);
+        insertNode(newVal);
     }
     void display()
     {
@@ -243,6 +249,14 @@ public:
     int count(int val){
         TreeNode* cur=findNode(root, val);
         return (cur ? cur->count : -1);
+    }
+    int getSize(){
+        return size;
+    }
+    void emptyTree(){
+        emptyTreeHelper(root);
+        root = nullptr;
+        size = 0;
     }
 };
 
@@ -254,6 +268,8 @@ int main()
     cout << "update <curval> <newval>" << endl;
     cout << "display" << endl;
     cout << "count <val>" << endl;
+    cout << "size" << endl;
+    cout << "empty" << endl;
     cout << "exit" << endl;
 
     AVLTree *avl = new AVLTree();
@@ -292,6 +308,12 @@ int main()
             int val;
             cin >> val;
             cout << "count: " << avl->count(val)<<endl;
+        }
+        else if(i=="size"){
+            cout << "size: " << avl->getSize()<<endl;
+        }
+        else if(i=="empty"){
+            avl->emptyTree();
         }
         else
         {
